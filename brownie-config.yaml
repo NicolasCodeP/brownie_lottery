@@ -1,0 +1,32 @@
+dependencies:
+  # - <organinization/repo>@<version>
+  - smartcontractkit/chainlink-brownie-contracts@0.8.0
+  - OpenZeppelin/openzeppelin-contracts@5.0.1
+compiler:
+  solc:
+    remappings:
+      - "@chainlink=smartcontractkit/chainlink-brownie-contracts@0.8.0"
+      - "@openzeppelin=OpenZeppelin/openzeppelin-contracts@5.0.1"
+dotenv: .env
+networks:
+  default: development
+  development:
+    verify: False
+    vrf_keyHash: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c"
+    vrf_subscriptionId: 16694
+  mainnet-fork-lottery:
+    eth_usd_price_feed: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"
+    verify: False
+  sepolia:
+    eth_usd_price_feed: "0x694AA1769357215DE4FAC081bf1f309aDC325306"
+    verify: True
+  goerli:
+    eth_usd_price_feed: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e"
+    vrf_coordinator: "0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D"
+    vrf_keyHash: "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15"
+    vrf_subscriptionId: 16694
+    verify: True
+  ganache-local:
+    verify: False
+wallets:
+  from_key: ${PRIVATE_KEY}
