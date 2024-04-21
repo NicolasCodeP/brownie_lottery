@@ -1,6 +1,5 @@
 """ Integration Tests Lottery Smart Contract """
 
-
 import asyncio
 from brownie import Lottery, accounts, config, network, exceptions
 import pytest
@@ -10,7 +9,7 @@ from scripts.helpful_scripts import LOCAL_BLOCKCHAIN_ENVIRONMENTS, get_account
 
 
 async def listen_to_event(contract, event):
-    """Test listed to Contrace"""
+    """Test listed to Contract"""
     # Start listening to the event
     co = contract.events.listen(event, timeout=240)
 
