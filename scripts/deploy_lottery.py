@@ -30,6 +30,8 @@ def deploy_lottery():
         vrf_subscription_id, lottery.address, {"from": account}
     )
     tx.wait(1)
+    print("Lottery added to vrf consumer!")
+
     # Check if suscription is completed (Need to add test/check)
     vrf_subscription = vrf_coordinator.getSubscription(
         vrf_subscription_id, {"from": account}
