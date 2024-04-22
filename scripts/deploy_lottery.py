@@ -1,8 +1,14 @@
 """ Deploy lottery script """
 
+import asyncio
 import time
 from brownie import config, network, Lottery
-from scripts.helpful_scripts import get_account, get_contract, fund_subscription
+from scripts.helpful_scripts import (
+    get_account,
+    get_contract,
+    fund_subscription,
+    listen_to_event,
+)
 
 
 def deploy_lottery():
@@ -44,6 +50,7 @@ def deploy_lottery():
 
 def start_lottery():
     """Start the lottery"""
+    print("Starting lottery...")
     account = get_account()
     lottery = Lottery[-1]
     starting_tx = lottery.startLottery({"from": account})
@@ -53,6 +60,7 @@ def start_lottery():
 
 def enter_lottery():
     """Enter the lottery"""
+    print("Entering lottery...")
     account = get_account()
     lottery = Lottery[-1]
     value = lottery.getEntranceFee() + 100000000
@@ -67,12 +75,39 @@ def end_lottery():
     print("Ending lottery...")
     account = get_account()
     lottery = Lottery[-1]
-    # fund the contract then end the lottery
-    # tx = fund_with_link(lottery.address) # Try without MockLinkToken.sol
-    # tx.wait(1) # Try without MockLinkToken.sol
-    ending_transaction = lottery.endLottery({"from": account})
-    ending_transaction.wait(1)
-    # time.sleep(60)
+    # Fund the contract's subscription to required minimum amount
+    lottery.endLottery({"from": account})
+
+    print("Waiting for callback to announce the winner...")
+    result = asyncio.run(listen_to_event(lottery, "RequestFulfilled"))
+
+    if result["timed_out"]:
+        print("Pending VRF request...\nAdding 0.1 LINK to unlock...")
+        asyncio.run(
+            asyncio.gather(
+                listen_to_event(lottery, "RequestFulfilled"),
+                asyncio.to_thread(lambda: refund_lottery(1)),
+            )
+        )
+
+    print(f"{lottery.recentWinner()} is the new winner!")
+
+
+def refund_lottery(amount=1000000000000000000):
+    """Check and Refund Lottery to the minimum LINK token balance.
+    An insufficient balance will result in a pending state"""
+    account = get_account()
+    vrf_coordinator = get_contract("vrf_coordinator")
+    vrf_subscription_id, vrf_subscription = fund_subscription(
+        account, vrf_coordinator, amount=amount, force=True
+    )
+    print(f"Subscription set and funded: {vrf_subscription_id}")
+    print(f"Subscrition details: {vrf_subscription}")
+
+
+def get_lottery_recent_winner():
+    """Get the recent winnter of the lottery"""
+    lottery = Lottery[-1]
     print(f"{lottery.recentWinner()} is the new winner!")
 
 

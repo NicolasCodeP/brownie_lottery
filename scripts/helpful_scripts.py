@@ -23,6 +23,26 @@ STARTING_PRICE = 200000000000
 # STARTING_PRICE = 2000
 
 
+async def listen_to_event(contract, event):
+    """Listen to the event of a Contract
+
+    Access the result's 'timed_out' field to check if event trigerred
+    """
+    # Start listening to the event
+    co = contract.events.listen(event, timeout=240)
+
+    # Await the coroutine to get the result
+    result = await co
+
+    return result
+
+    # Access the 'timed_out' field from the result
+    timed_out = result["timed_out"]
+
+    # Now you can use timed_out as needed
+    print(f"Timed out: {timed_out}")
+
+
 def int_to_uint256(val: int):
     """Encode integer to uint256
 
@@ -125,12 +145,14 @@ def fund_subscription(
     account=None,
     vrf_coordinator=None,
     amount=1000000000000000000,  # 1 LINK
-    min_balance=1,
+    min_balance=5,
+    force=False,
 ):
     """
-    Trasnfer LINK token if not enough funds.
+    Transfer LINK token back to minimum balance amount.
     Use VRFCoordinatorV2Mock to fund subscription for local test.
 
+    1 LINK = 1000000000000000000,
 
     Returns:
         subscription_id:
@@ -155,21 +177,24 @@ def fund_subscription(
         subscription = vrf_coordinator.getSubscription(
             subscription_id, {"from": account}
         )
-        subscription_balance = int(subscription[0]) / (10**18)
-        print(f"Subscription {subscription_id} balance: {subscription_balance} LINK")
-        if subscription_balance < min_balance:
-            # Transfer LINK token
-            print(f"Not enough funds transferring {(amount / (10 ** 18))} LINK")
-            link_token_address = config["networks"][network.show_active()]["link_token"]
-            erc677 = interface.IERC677(link_token_address)
-            tx = erc677.transferAndCall(
-                vrf_coordinator.address,
-                amount,
-                int_to_uint256(subscription_id),
-                {"from": account},
+        if force:
+            print(f"Transferring {(amount / (10 ** 18))} LINK...")
+            fund_with_link(vrf_coordinator.address, subscription_id, account, amount)
+        else:
+            subscription_balance = int(subscription[0]) / (10**18)
+            print(
+                f"Subscription {subscription_id} balance: {subscription_balance} LINK"
             )
-            tx.wait(1)
-            print(f"Funded: {(amount / (10 ** 18))} LINK")
+            if subscription_balance < min_balance:
+                amount = (min_balance - subscription_balance + 1) * (10**18)
+                print(
+                    f"Balance insufficient, transferring {(amount / (10 ** 18))} LINK..."
+                )
+                fund_with_link(
+                    vrf_coordinator.address, subscription_id, account, amount
+                )
+            else:
+                print("Balance sufficient")
 
     subscription = vrf_coordinator.getSubscription(subscription_id, {"from": account})
     return subscription_id, subscription
@@ -177,14 +202,19 @@ def fund_subscription(
 
 def fund_with_link(
     contract_address,
+    subscription_id,
     account=None,
-    link_token=None,
-    amount=100000000000000000,  # 0.1 LINK
+    amount=1000000000000000000,  # 0.1 LINK
 ):
-    """Fund address with link token"""
+    """Fund VRF subscription with link token"""
     account = account if account else get_account()
-    link_token = link_token if link_token else get_contract("link_token")
-    tx = link_token.transfer(contract_address, amount, {"from": account})
+    link_token_address = config["networks"][network.show_active()]["link_token"]
+    erc677 = interface.IERC677(link_token_address)
+    tx = erc677.transferAndCall(
+        contract_address,
+        amount,
+        int_to_uint256(subscription_id),
+        {"from": account},
+    )
     tx.wait(1)
-    print("Fund contract!")
-    return tx
+    print(f"Funded: {(amount / (10 ** 18))} LINK")
