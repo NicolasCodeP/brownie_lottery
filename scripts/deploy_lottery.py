@@ -2,11 +2,13 @@
 
 import asyncio
 import time
-from brownie import config, network, Lottery
+
+from brownie import Lottery, config, network
+
 from scripts.helpful_scripts import (
+    fund_subscription,
     get_account,
     get_contract,
-    fund_subscription,
     listen_to_event,
 )
 

@@ -1,10 +1,12 @@
 """ Unit Tests Lottery Smart Contract """
+
 # 0.022369463 (At the time)
 # 220000000000000000 ==> 1 ETH = 2,200USD
-import time
+
 import pytest
+from brownie import exceptions, network
 from web3 import Web3
-from brownie import Lottery, accounts, config, network, exceptions
+
 from scripts.deploy_lottery import deploy_lottery
 from scripts.helpful_scripts import (
     LOCAL_BLOCKCHAIN_ENVIRONMENTS,
@@ -117,7 +119,6 @@ def test_can_pick_winner_correctly():
     event_rnd_wrd_fulfilled = tx.events["RandomWordsFulfilled"]
     print(f"Sucess of fulfillRandomWorld: {event_rnd_wrd_fulfilled['success']}")
 
-    # time.sleep(60)
     # Assert
     # 777 % 3 = 0
     assert event_rnd_wrd_fulfilled["success"] is True

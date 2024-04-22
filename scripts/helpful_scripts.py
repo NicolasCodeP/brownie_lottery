@@ -1,15 +1,7 @@
 """ Helpful scripts """
 
-from brownie import (
-    Contract,
-    network,
-    accounts,
-    config,
-    interface,
-    MockV3Aggregator,
-    VRFCoordinatorV2Mock,
-    # VRFCoordinatorV2Interface,
-)
+from brownie import MockV3Aggregator  # VRFCoordinatorV2Interface,
+from brownie import Contract, VRFCoordinatorV2Mock, accounts, config, interface, network
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork-dev", "mainnet-fork-lottery"]
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache-local"]
