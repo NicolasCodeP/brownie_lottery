@@ -115,8 +115,25 @@ Transaction sent: 0xf381c818e2db58385375ab185a2a86f1b3d4bcfc4b392377c4b53fcaf4e6
   Lottery.constructor confirmed   Block: 5722738   Gas used: 1040238 (90.09%)
   Lottery deployed at: 0x1981f8a75C4532c1DBBd44Ed94C8e6aE036Feae9
 
-Waiting for https://api-sepolia.etherscan.io/api to process contract...
+Waiting for <https://api-sepolia.etherscan.io/api> to process contract...
 Verification submitted successfully. Waiting for result...
 Verification complete. Result: Pass - Verified
 Adding lottery to vrf consumer...
 Lottery Address: 0x1981f8a75C4532c1DBBd44Ed94C8e6aE036Feae9
+
+From support:  
+Every subscription requires a minimum balance to support consuming contracts and buffer against gas price fluctuations. When the balance falls below this threshold, requests remain pending for up to 24 hours until adequately funded. Adding sufficient LINK to the subscription allows pending requests to automatically process, provided they haven't expired.  
+
+If you're planning to make one or a few VRF requests, you can explore Direct Funding model. This model charges at request time and is determined by the current network gas fees.  
+
+You can read more about it: <https://docs.chain.link/vrf/v2/subscription#subscription-limits> and <https://docs.chain.link/vrf#choosing-the-correct-method>
+
+```math
+(((Gas lane maximum * (Max verification gas + Callback gas limit)) / (1,000,000,000 Gwei/ETH)) / (ETH/LINK price)) + LINK premium = Minimum LINK 
+
+Same formula broken out into steps
+Gas lane maximum * (Max verification gas + Callback gas limit) = Total estimated gas (Gwei)
+Total estimated gas (Gwei) / 1,000,000,000 Gwei/ETH = Total estimated gas (ETH)
+Total estimated gas (ETH) / (ETH/LINK price) = Total estimated gas (LINK)
+Total estimated gas (LINK) + LINK premium = Minimum subscription balance (LINK)
+```
