@@ -11,7 +11,7 @@ This `Lottery` smart contract project is inspired by the teachings of Patrick Co
 The `Lottery` contract allows for decentralized crowdfunding, where users can contribute ETH and the contract owner can withdraw the accumulated funds. This project serves as a practical example of how to build, deploy, and test a smart contract using the latest Solidity features.
 
 Live example:  
-[Lottery Contract deployed on Sepolia Testnet]()
+[Lottery Contract deployed on Sepolia Testnet](https://sepolia.etherscan.io/address/0xd24b673d89d7f6fe5d8d42af41172e608db433f8)
 
 ## Features
 
@@ -98,42 +98,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - Patrick Collins and his educational content on Solidity and smart contract development.
 - Brownie for the powerful Ethereum development framework.
 - OpenZeppelin and Chainlink for their secure and reliable smart contract libraries.
-
-## Test
-
-Contract deployed:
-0x1981f8a75C4532c1DBBd44Ed94C8e6aE036Feae9
-
-Running 'scripts/deploy_lottery.py::main'...
-Using account: 0x1cA119EaB69935ab11064F24854806B809392A4F
-Funding VRF subscription...
-Subscription set and funded: 11169
-Subscrition details: (0, 0, '0xbdc722bAE8Ba01c5462891FF83c7d1c010101A95', ('0x4cf5A54939FE6DdB27adE8Bc4310F2D1708204A3',))
-Deploying lottery...
-Transaction sent: 0xf381c818e2db58385375ab185a2a86f1b3d4bcfc4b392377c4b53fcaf4e680e6
-  Gas price: 1.002742218 gwei   Gas limit: 1154627   Nonce: 21
-  Lottery.constructor confirmed   Block: 5722738   Gas used: 1040238 (90.09%)
-  Lottery deployed at: 0x1981f8a75C4532c1DBBd44Ed94C8e6aE036Feae9
-
-Waiting for <https://api-sepolia.etherscan.io/api> to process contract...
-Verification submitted successfully. Waiting for result...
-Verification complete. Result: Pass - Verified
-Adding lottery to vrf consumer...
-Lottery Address: 0x1981f8a75C4532c1DBBd44Ed94C8e6aE036Feae9
-
-From support:  
-Every subscription requires a minimum balance to support consuming contracts and buffer against gas price fluctuations. When the balance falls below this threshold, requests remain pending for up to 24 hours until adequately funded. Adding sufficient LINK to the subscription allows pending requests to automatically process, provided they haven't expired.  
-
-If you're planning to make one or a few VRF requests, you can explore Direct Funding model. This model charges at request time and is determined by the current network gas fees.  
-
-You can read more about it: <https://docs.chain.link/vrf/v2/subscription#subscription-limits> and <https://docs.chain.link/vrf#choosing-the-correct-method>
-
-```math
-(((Gas lane maximum * (Max verification gas + Callback gas limit)) / (1,000,000,000 Gwei/ETH)) / (ETH/LINK price)) + LINK premium = Minimum LINK 
-
-Same formula broken out into steps
-Gas lane maximum * (Max verification gas + Callback gas limit) = Total estimated gas (Gwei)
-Total estimated gas (Gwei) / 1,000,000,000 Gwei/ETH = Total estimated gas (ETH)
-Total estimated gas (ETH) / (ETH/LINK price) = Total estimated gas (LINK)
-Total estimated gas (LINK) + LINK premium = Minimum subscription balance (LINK)
-```
